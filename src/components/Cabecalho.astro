@@ -1,0 +1,102 @@
+---
+import { site } from '../data/site';
+import { url } from '../lib/url';
+import Icone from './Icone.astro';
+---
+
+<header class="cabecalho">
+  <div class="contem barra">
+    <a class="marca" href={url()}>{site.nome}</a>
+    <nav aria-label="Principal">
+      <ul>
+        <li class="so-desktop"><a class="link" href={url('#trabalhos')}>Trabalhos</a></li>
+        <li class="so-desktop"><a class="link" href={url('#sobre')}>Sobre</a></li>
+        <li class="so-desktop">
+          <a
+            class="link"
+            href={site.instagram.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram do Silvio (abre em nova aba)"
+          >
+            <Icone nome="instagram" tamanho={22} />
+          </a>
+        </li>
+        <li><a class="botao-mini" href={url('#orcamento')}>Orçamento</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  /* Sobreposto ao topo da página: o hero e as páginas reservam o espaço (--topo). */
+  .cabecalho {
+    position: absolute;
+    inset: 0 0 auto 0;
+    z-index: 10;
+    height: var(--topo);
+  }
+
+  .barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .marca {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font-family: var(--fonte-titulo);
+    font-size: var(--t-lg);
+    text-decoration: none;
+  }
+
+  ul {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .link {
+    display: inline-flex;
+    text-decoration: none;
+    color: var(--osso);
+    padding-block: 0.5rem;
+  }
+
+  .link:hover {
+    color: var(--azul);
+  }
+
+  .botao-mini {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    border: 1px solid var(--osso);
+    border-radius: var(--raio);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      background-color 0.18s,
+      color 0.18s;
+  }
+
+  .botao-mini:hover {
+    background: var(--osso);
+    color: var(--tinta);
+  }
+
+  .so-desktop {
+    display: none;
+  }
+
+  @media (min-width: 48rem) {
+    .so-desktop {
+      display: block;
+    }
+  }
+</style>

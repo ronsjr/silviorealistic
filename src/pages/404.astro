@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+---
+
+<Base titulo="Página não encontrada">
+  <section class="contem erro">
+    <h1>Página não encontrada</h1>
+    <p>O endereço que você abriu não existe ou foi movido.</p>
+    <a class="botao" href={url()}>Voltar ao início</a>
+  </section>
+</Base>
+
+<style>
+  .erro {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+    padding-top: calc(var(--topo) + 3rem);
+    padding-bottom: 6rem;
+    min-height: 70svh;
+    align-content: center;
+  }
+
+  h1 {
+    font-size: var(--t-2xl);
+  }
+
+  p {
+    color: var(--nevoa);
+  }
+</style>

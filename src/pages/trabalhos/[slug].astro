@@ -1,0 +1,239 @@
+---
+import { getCollection } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Orcamento from '../../components/Orcamento.astro';
+import BotaoWhatsapp from '../../components/BotaoWhatsapp.astro';
+import { fotosDaCategoria } from '../../lib/portfolio';
+import { url } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const categorias = (await getCollection('categorias')).sort(
+    (a, b) => a.data.ordem - b.data.ordem,
+  );
+
+  return categorias.map((categoria) => ({
+    params: { slug: categoria.id },
+    props: {
+      categoria,
+      outras: categorias.filter((outra) => outra.id !== categoria.id),
+    },
+  }));
+}
+
+const { categoria, outras } = Astro.props;
+const { titulo, descricao } = categoria.data;
+
+// Versão ampliada de cada foto, usada pelo lightbox (zoom com pinça e arrasto).
+const itens = await Promise.all(
+  fotosDaCategoria(categoria.id).map(async (foto) => ({
+    ...foto,
+    ampliada: await getImage({
+      src: foto.imagem,
+      width: Math.min(1600, foto.imagem.width),
+      format: 'webp',
+      quality: 82,
+    }),
+  })),
+);
+---
+
+<Base titulo={titulo} descricao={descricao}>
+  <div class="pagina">
+    <header class="contem topo-categoria">
+      <a class="voltar" href={url('#trabalhos')}>Todos os trabalhos</a>
+      <h1>{titulo}</h1>
+      <p>{descricao}</p>
+    </header>
+
+    {
+      itens.length > 0 ? (
+        <ul class="galeria" id="galeria">
+          {itens.map((foto, indice) => (
+            <li>
+              <a
+                href={foto.ampliada.src}
+                data-pswp-width={foto.ampliada.attributes.width}
+                data-pswp-height={foto.ampliada.attributes.height}
+                aria-label={`Ampliar trabalho ${indice + 1} de ${itens.length}`}
+              >
+                <Image
+                  src={foto.imagem}
+                  widths={[320, 480, 640, 800]}
+                  sizes="(min-width: 80rem) 25vw, (min-width: 48rem) 33vw, 50vw"
+                  alt={`${titulo}: trabalho ${indice + 1}`}
+                  loading={indice < 4 ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="contem vazia">
+          <p>As fotos desta categoria entram em breve. Enquanto isso, peça um orçamento.</p>
+          <BotaoWhatsapp rotulo="Pedir orçamento" />
+        </div>
+      )
+    }
+
+    {
+      outras.length > 0 && (
+        <nav class="contem outras" aria-labelledby="titulo-outras">
+          <h2 id="titulo-outras">Outras categorias</h2>
+          <ul>
+            {outras.map((outra) => (
+              <li>
+                <a href={url(`trabalhos/${outra.id}/`)}>{outra.data.titulo}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+  </div>
+
+  <Orcamento />
+</Base>
+
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+  import 'photoswipe/style.css';
+
+  if (document.querySelector('#galeria')) {
+    const lightbox = new PhotoSwipeLightbox({
+      gallery: '#galeria',
+      children: 'a',
+      pswpModule: () => import('photoswipe'),
+      bgOpacity: 0.96,
+      wheelToZoom: true,
+      padding: { top: 24, bottom: 24, left: 8, right: 8 },
+      closeTitle: 'Fechar (Esc)',
+      zoomTitle: 'Ampliar',
+      arrowPrevTitle: 'Anterior',
+      arrowNextTitle: 'Próxima',
+      errorMsg: 'Não foi possível carregar a imagem.',
+    });
+    lightbox.init();
+  }
+</script>
+
+<style>
+  .pagina {
+    padding-top: var(--topo);
+  }
+
+  .topo-categoria {
+    display: grid;
+    gap: 1rem;
+    padding-block: 2rem 2.5rem;
+  }
+
+  .voltar {
+    justify-self: start;
+    color: var(--nevoa);
+    font-size: var(--t-sm);
+    text-decoration: none;
+    padding-block: 0.75rem;
+  }
+
+  .voltar:hover {
+    color: var(--osso);
+  }
+
+  h1 {
+    font-size: var(--t-2xl);
+  }
+
+  .topo-categoria p {
+    color: var(--nevoa);
+  }
+
+  /* Galeria em colunas (mosaico): cada foto mantém a proporção original. */
+  .galeria {
+    columns: 2;
+    column-gap: 0.5rem;
+    padding-inline: 0.5rem;
+    max-width: 100rem;
+    margin-inline: auto;
+  }
+
+  .galeria li {
+    break-inside: avoid;
+    margin-bottom: 0.5rem;
+  }
+
+  .galeria a {
+    display: block;
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--carvao);
+  }
+
+  .galeria img {
+    width: 100%;
+    height: auto;
+    transition: filter 0.25s;
+  }
+
+  .galeria a:hover img {
+    filter: brightness(1.12);
+  }
+
+  .vazia {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+    padding-block: 2rem 4rem;
+  }
+
+  .outras {
+    padding-block: 3.5rem 4rem;
+  }
+
+  .outras h2 {
+    font-size: var(--t-lg);
+    color: var(--nevoa);
+    margin-bottom: 1rem;
+  }
+
+  .outras ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+  }
+
+  .outras a {
+    display: inline-block;
+    padding-block: 0.4rem;
+    font-family: var(--fonte-titulo);
+    font-size: var(--t-xl);
+    text-decoration: none;
+  }
+
+  .outras a:hover {
+    color: var(--azul);
+  }
+
+  @media (min-width: 48rem) {
+    .topo-categoria {
+      padding-block: 3rem 3.5rem;
+    }
+
+    .galeria {
+      columns: 3;
+      column-gap: 0.75rem;
+      padding-inline: 0.75rem;
+    }
+
+    .galeria li {
+      margin-bottom: 0.75rem;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .galeria {
+      columns: 4;
+    }
+  }
+</style>

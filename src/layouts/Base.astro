@@ -1,0 +1,44 @@
+---
+import '@fontsource/gloock/latin-400.css';
+import '@fontsource-variable/hanken-grotesk/wght.css';
+import '../styles/global.css';
+import { site } from '../data/site';
+import { url } from '../lib/url';
+import Cabecalho from '../components/Cabecalho.astro';
+import Rodape from '../components/Rodape.astro';
+
+interface Props {
+  titulo?: string;
+  descricao?: string;
+}
+
+const { titulo, descricao = site.descricao } = Astro.props;
+const tituloCompleto = titulo
+  ? `${titulo} | ${site.nome}`
+  : `${site.nome} | Tatuagem realista no Rio de Janeiro`;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descricao} />
+    {site.noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#111418" />
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+  </head>
+  <body>
+    <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+    <Cabecalho />
+    <main id="conteudo">
+      <slot />
+    </main>
+    <Rodape />
+  </body>
+</html>

@@ -5,65 +5,95 @@
 
 ## O que é
 
-Site de portfólio pessoal de **Silvio Muniz** (Instagram: `@silviorealistictattoo`), artista tatuador de arte realista. Organizado em categorias de trabalhos (as categorias ainda serão definidas por ele). Idioma do site e da documentação: **português brasileiro**.
+Site de portfólio pessoal de **Silvio Muniz** (Instagram: `@silviorealistictattoo`), artista tatuador de arte realista, organizado em categorias de trabalhos (as categorias definitivas ainda serão definidas por ele). Idioma do site e da documentação: **português brasileiro**.
 
-Quem mantém o site e atualiza o conteúdo: o mantenedor do site. O Silvio é o dono do portfólio.
+## Comandos
+
+Requer Node 20 (o da máquina de desenvolvimento). Sem Docker: o site é estático.
+
+| Comando | O que faz |
+|---|---|
+| `npm install` | Instala as dependências |
+| `npm run dev` | Servidor local com recarga automática: http://localhost:4321/silviorealistic/ |
+| `npm run build` | Gera o site em `dist/` |
+| `npm run preview` | Serve o `dist/` (conferir o build antes de publicar) |
+| `npm run imagens` | Processa `originals/` e grava em `src/assets/portfolio/` (marca d'água, sem EXIF) |
+| `npm run imagens:teste` | Gera imagens de teste. Com `-- --limpar` remove `teste-*.jpg` |
 
 ## Stack
 
-- **Astro 5.x** (site estático, sem framework de UI), fixado na linha 5.18.x porque a máquina usa **Node 20.19.6** e o mantenedor não quer instalar nem trocar versões de Node. **Não atualizar para uma major nova do Astro** (a 7.x exige Node >= 22.23.4) sem decisão dele. No GitHub Actions usar também Node 20, igual ao local.
-- **CSS puro** com variáveis (design tokens). **Sem React e sem Tailwind**, por decisão.
-- JavaScript só onde for necessário (lightbox da galeria). Preferir HTML/CSS.
-- **Mobile first**: escrever o CSS base para celular e ampliar com `min-width` para telas maiores.
-- **Tema escuro** como identidade visual.
-- Ver `memory/decisions.md` para o histórico e o motivo de cada decisão.
+- **Astro 5.x** (site estático, sem framework de UI), fixado na linha 5.18.x porque a máquina usa **Node 20** e o mantenedor não quer instalar nem trocar versões de Node. **Não atualizar para uma major nova do Astro** (a 7.x exige Node >= 22.23.4) sem decisão dele. No GitHub Actions usar também Node 20, igual ao local.
+- **CSS puro** com variáveis (design tokens em `src/styles/global.css`), mais estilos escopados em cada componente `.astro`. **Sem React e sem Tailwind**, por decisão.
+- JavaScript só onde é necessário: lightbox da galeria (**PhotoSwipe**, com zoom por pinça). O resto é HTML/CSS.
+- Fontes **dentro do site** via Fontsource (Gloock nos títulos, Hanken Grotesk no texto), sem chamadas ao Google.
+- O `npm install` mostra um aviso de engine do `undici@8` (dependência interna do Astro usada só pelo recurso experimental de fontes, que não usamos). É inofensivo no Node 20.
+- Histórico e motivos das decisões: `memory/decisions.md`.
 
-## Hospedagem e deploy
+## Design
 
-- **GitHub Pages**, com deploy por GitHub Actions a cada push na `main`.
-- URL provisória: `https://ronsjr.github.io/silviorealistic/`. Por isso o `astro.config` usa `site` e `base`. Todos os links internos e de assets devem respeitar o `base` (usar `import.meta.env.BASE_URL`).
-- Domínio provável: `silviorealistictattoo.com.br` (consta no link da bio do Instagram do Silvio e hoje está estacionado na Hostinger; confirmar titularidade e acesso ao DNS). Ao conectar: criar `public/CNAME`, ajustar `site`, remover `base` e apontar o DNS no painel da Hostinger.
-- Plano B se o GitHub Pages não servir: **Cloudflare Pages** (aceita repositório privado).
+- **Mobile first**: o CSS base é o do celular e as telas maiores ampliam com `min-width` (48rem e 80rem). Alvos de toque com no mínimo 44 px. Respeitar `prefers-reduced-motion`.
+- **Tema escuro**, com cores tiradas do ofício: Tinta `#111418` (fundo), Carvão `#181c22`, Grafite `#2b313a` (linhas), Osso `#ece7dd` (texto), Névoa `#a3a9b3` (texto secundário), Azul-tinta `#8fafd1` (foco e hover; o preto da tatuagem envelhece azulado sob a pele). Sem acento saturado: as fotos são a única cor da página.
+- **Elemento memorável**: o índice de categorias em tipografia grande (home). Um único movimento automático, a entrada do nome no hero. Evitar rótulos em caixa-alta, numeração decorativa, setas nos botões e cards idênticos.
+- Botões: cheio (Osso) com hover invertido, como o botão de WhatsApp de outros projetos do mantenedor. Classes globais `.botao` e `.botao--vazado`.
+
+## Conteúdo
+
+- **Categorias**: um arquivo `src/content/categorias/<slug>.json` com `titulo`, `descricao` e `ordem`. O `<slug>` vira a URL (`/trabalhos/<slug>/`) e o nome da pasta de fotos.
+- **Fotos**: `src/assets/portfolio/<slug>/*.jpg`. Basta colocar o arquivo na pasta que ele aparece na galeria (ordem alfabética). A primeira foto da categoria é a capa no índice; a da primeira categoria é a foto de abertura da home.
+- **Dados gerais** (nome, Instagram, WhatsApp, `noindex`): `src/data/site.ts`.
+- As categorias atuais (Realismo, Cover up, Fechamentos) e seus textos são **provisórios**, inspirados nos destaques do Instagram. O Silvio define as definitivas.
+- As fotos `teste-*.jpg` são **imagens de teste geradas**, não trabalhos dele. Remover com `npm run imagens:teste -- --limpar` quando entrarem as reais.
 
 ## Regras de imagens (obrigatórias)
 
 O repositório é público e o risco real é cópia indevida das fotos. Portanto:
 
-1. **Originais em alta resolução ficam só em `originals/`**, ignorada pelo git. Nunca commitar.
-2. Um script de processamento (a criar em `scripts/`) gera as versões publicáveis: lado maior até ~1600 px, **marca d'água discreta**, **metadados EXIF removidos** (podem conter GPS), gravadas em `src/assets/portfolio/<categoria>/`.
-3. Só `src/assets/` é versionado. O Astro ainda converte para WebP/AVIF no build.
+1. **Originais em alta resolução ficam só em `originals/`**, ignorada pelo git. Nunca commitar. As fotos vêm do próprio Silvio (não raspar o Instagram).
+2. O fluxo é `originals/<categoria>/foto.jpg` → `npm run imagens` → `src/assets/portfolio/<categoria>/foto.jpg`. O script **remove todos os metadados** (inclusive GPS, validado em teste), aplica a rotação do EXIF, reduz para no máximo 1600 px e aplica **marca d'água** discreta (`@silviorealistictattoo`, mudável por `MARCA_DAGUA`). Aceita jpg, jpeg, png e webp.
+3. Só `src/assets/` é versionado. O Astro ainda converte para WebP no build.
 4. Sem licença open source no repositório (todos os direitos reservados por padrão).
-5. Estimativa de volume: algumas centenas de fotos. Manter o site publicado abaixo do limite de ~1 GB do GitHub Pages.
+5. Volume estimado: algumas centenas de fotos. Manter o site publicado abaixo do limite de ~1 GB do GitHub Pages.
 
 ## Contato
 
-- Apenas **botões de WhatsApp** (link `wa.me`) e **link do Instagram**. Sem formulário e sem backend.
-- Botão de WhatsApp **não flutuante**: seguir a linguagem visual do botão de outro projeto do mantenedor (botão inline, cor cheia com hover invertido), adaptada ao tema escuro.
+- Apenas **botões de WhatsApp** (link `wa.me`, não flutuante) e **link do Instagram**. Sem formulário e sem backend.
+- O número de WhatsApp fica em `src/data/site.ts` e está **vazio** até o Silvio confirmar qual usar. Não colocar número real no código sem essa confirmação.
+
+## Hospedagem e deploy
+
+- **GitHub Pages**, com deploy por GitHub Actions (`.github/workflows/deploy.yml`) a cada push na `main`.
+- URL provisória: `https://ronsjr.github.io/silviorealistic/`. Por isso o `astro.config.mjs` usa `site` e `base`. Todos os links internos devem usar o helper `url()` de `src/lib/url.ts`.
+- Domínio: **ainda não existe**; será registrado um novo depois. O `silviorealistictattoo.com.br` (estacionado na Hostinger) **não será usado**. Ao conectar o novo: criar `public/CNAME`, ajustar `site`, remover `base` e apontar o DNS.
+- Enquanto o site estiver em construção: `noindex` ligado (flag em `src/data/site.ts`) e **nenhum número de WhatsApp real** no código. Desligar o `noindex` só no lançamento.
+- Plano B se o GitHub Pages não servir: **Cloudflare Pages** (aceita repositório privado).
 
 ## CMS (futuro)
 
-Hoje o conteúdo é atualizado por arquivos, pelo mantenedor. Está previsto um CMS gratuito baseado em Git (candidatos: Pages CMS, Sveltia CMS). Para facilitar a adoção depois: manter o conteúdo em **content collections / arquivos de dados** (nada de texto de categoria ou legenda fixo em componentes).
+Hoje o conteúdo é atualizado por arquivos. Está previsto um CMS gratuito baseado em Git (candidatos: Pages CMS, Sveltia CMS). O conteúdo já está em arquivos de dados (categorias em JSON, fotos por pasta). Atenção: um CMS que envie fotos direto ao repositório pularia a marca d'água e a remoção de EXIF; nesse caso a marca d'água precisa passar a ser aplicada no build.
 
 ## Estrutura de pastas
 
 ```
 silviorealistic/
 ├── CLAUDE.md
-├── memory/            ← decisões e contexto do projeto (versionado, só conteúdo técnico)
-├── originals/         ← fotos originais, LOCAL, ignorada pelo git
-├── scripts/           ← processamento de imagens
-├── public/            ← arquivos servidos como estão (favicon, CNAME futuro)
+├── memory/                  decisões e contexto (versionado, só conteúdo técnico)
+├── originals/               fotos originais, LOCAL, ignorada pelo git
+├── scripts/                 processar-imagens.mjs, gerar-imagens-teste.mjs
+├── public/                  favicon.svg (e CNAME no futuro)
 └── src/
-    ├── assets/portfolio/<categoria>/   ← fotos publicáveis (reduzidas, com marca d'água)
-    ├── components/
-    ├── content/ ou data/               ← categorias e metadados das fotos
-    ├── layouts/
-    ├── pages/
-    └── styles/                         ← tokens e CSS global
+    ├── assets/portfolio/<categoria>/   fotos publicáveis
+    ├── components/          Cabecalho, Rodape, Orcamento, BotaoWhatsapp, Icone
+    ├── content/categorias/  uma categoria por JSON
+    ├── data/site.ts         nome, Instagram, WhatsApp, noindex
+    ├── layouts/Base.astro
+    ├── lib/                 url.ts, portfolio.ts
+    ├── pages/               index, trabalhos/[slug], 404
+    └── styles/global.css    tokens e estilos base
 ```
 
 ## Regras gerais
 
-- Todo contexto persistente deste projeto vai em `memory/` (nunca no sistema interno do Claude Code), conforme a regra do ecossistema Raccoon Digital.
-- Commits: e-mail noreply do GitHub já está configurado no git. Não expor e-mail pessoal em commits.
+- Todo contexto persistente deste projeto vai em `memory/` dentro do repositório, não no sistema interno do Claude Code.
+- Repositório público: não escrever nomes pessoais, e-mails, telefones nem detalhes de outros projetos do mantenedor em arquivos versionados.
+- Commits usam o e-mail noreply do GitHub, já configurado no git.
 - O Claude usa sempre a forma masculina ao se referir a si mesmo em português.

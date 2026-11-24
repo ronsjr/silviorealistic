@@ -1,0 +1,15 @@
+---
+import Icone from './Icone.astro';
+import { linkWhatsapp } from '../data/site';
+
+interface Props {
+  rotulo?: string;
+}
+
+const { rotulo = 'Chamar no WhatsApp' } = Astro.props;
+---
+
+<a class="botao" href={linkWhatsapp()} target="_blank" rel="noopener noreferrer">
+  <Icone nome="whatsapp" />
+  <span>{rotulo}</span>
+</a>

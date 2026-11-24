@@ -1,0 +1,47 @@
+---
+import { site } from '../data/site';
+import BotaoWhatsapp from './BotaoWhatsapp.astro';
+import Icone from './Icone.astro';
+---
+
+<section class="orcamento" id="orcamento" aria-labelledby="titulo-orcamento">
+  <div class="contem">
+    <h2 id="titulo-orcamento">Peça o seu orçamento</h2>
+    <p>Conte a ideia, o tamanho e o local do corpo. O Silvio responde pelo WhatsApp.</p>
+    <div class="acoes">
+      <BotaoWhatsapp />
+      <a
+        class="botao botao--vazado"
+        href={site.instagram.url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <Icone nome="instagram" />
+        <span>Ver o Instagram</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .orcamento {
+    border-top: 1px solid var(--grafite);
+    padding-block: 4rem 5rem;
+  }
+
+  h2 {
+    font-size: var(--t-2xl);
+    margin-bottom: 1.25rem;
+  }
+
+  p {
+    color: var(--nevoa);
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 48rem) {
+    .orcamento {
+      padding-block: 6rem 7rem;
+    }
+  }
+</style>

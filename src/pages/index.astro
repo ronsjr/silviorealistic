@@ -1,0 +1,320 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Orcamento from '../components/Orcamento.astro';
+import BotaoWhatsapp from '../components/BotaoWhatsapp.astro';
+import { site } from '../data/site';
+import { url } from '../lib/url';
+import { fotosDaCategoria } from '../lib/portfolio';
+
+const categorias = (await getCollection('categorias')).sort((a, b) => a.data.ordem - b.data.ordem);
+
+const lista = categorias.map((categoria) => {
+  const fotos = fotosDaCategoria(categoria.id);
+  return {
+    id: categoria.id,
+    ...categoria.data,
+    total: fotos.length,
+    capa: fotos[0]?.imagem,
+  };
+});
+
+// A foto de abertura é a primeira foto da primeira categoria que tiver fotos.
+const fotoHero = lista.find((categoria) => categoria.capa)?.capa;
+
+const [primeiroNome, ...demaisNomes] = site.nome.split(' ');
+---
+
+<Base>
+  <section class="hero">
+    {
+      fotoHero && (
+        <Image
+          class="hero-foto"
+          src={fotoHero}
+          widths={[640, 960, 1440, 1920]}
+          sizes="100vw"
+          alt=""
+          loading="eager"
+          fetchpriority="high"
+        />
+      )
+    }
+    <div class="contem hero-texto">
+      <h1>
+        <span class="linha"><span>{primeiroNome}</span></span>
+        <span class="linha"><span>{demaisNomes.join(' ')}</span></span>
+      </h1>
+      <p class="hero-sub">{site.descricao}</p>
+      <div class="acoes">
+        <a class="botao botao--vazado" href="#trabalhos">Ver trabalhos</a>
+        <BotaoWhatsapp rotulo="Pedir orçamento" />
+      </div>
+    </div>
+  </section>
+
+  <section class="trabalhos" id="trabalhos" aria-labelledby="titulo-trabalhos">
+    <div class="contem">
+      <h2 id="titulo-trabalhos">Trabalhos</h2>
+      <ul class="indice">
+        {
+          lista.map((categoria) => (
+            <li>
+              <a class="item" href={url(`trabalhos/${categoria.id}/`)}>
+                <span class="item-texto">
+                  <span class="item-nome">{categoria.titulo}</span>
+                  <span class="item-desc">{categoria.descricao}</span>
+                  <span class="item-total">
+                    {categoria.total > 0
+                      ? `${categoria.total} ${categoria.total === 1 ? 'trabalho' : 'trabalhos'}`
+                      : 'Em breve'}
+                  </span>
+                </span>
+                {categoria.capa ? (
+                  <Image
+                    class="item-capa"
+                    src={categoria.capa}
+                    width={288}
+                    height={384}
+                    alt=""
+                    loading="lazy"
+                  />
+                ) : (
+                  <span class="item-capa item-capa--vazia" aria-hidden="true" />
+                )}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="sobre" id="sobre" aria-labelledby="titulo-sobre">
+    <div class="contem sobre-grade">
+      <h2 id="titulo-sobre">Sobre</h2>
+      <div class="sobre-texto">
+        <p>
+          Silvio Muniz é tatuador no Rio de Janeiro e trabalha com realismo e cover up.
+        </p>
+        <p>
+          Mande uma mensagem com a sua ideia e o local do corpo para receber um orçamento.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Orcamento />
+</Base>
+
+<style>
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    align-items: end;
+    min-height: 100svh;
+    padding-top: var(--topo);
+    padding-bottom: 2.5rem;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(to bottom, rgb(17 20 24 / 0.7), transparent 28%),
+      linear-gradient(to top, var(--tinta) 6%, rgb(17 20 24 / 0.3) 60%);
+  }
+
+  .hero-foto {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-texto {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  h1 {
+    font-size: clamp(4rem, 1rem + 20vw, 12rem);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+
+  .linha {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.08em;
+  }
+
+  .linha > span {
+    display: inline-block;
+  }
+
+  .hero-sub {
+    font-size: var(--t-lg);
+    color: var(--osso);
+    max-width: 28ch;
+  }
+
+  .hero .acoes {
+    margin-top: 0.5rem;
+  }
+
+  /* Único movimento da página: o nome sobe de dentro da máscara e a foto se acomoda. */
+  @media (prefers-reduced-motion: no-preference) {
+    .linha > span {
+      transform: translateY(105%);
+      animation: sobe 0.9s cubic-bezier(0.2, 0.7, 0.1, 1) forwards;
+    }
+
+    .linha:nth-child(2) > span {
+      animation-delay: 0.12s;
+    }
+
+    .hero-foto {
+      animation: acomoda 1.6s cubic-bezier(0.2, 0.7, 0.1, 1) both;
+    }
+
+    .hero-sub,
+    .hero .acoes {
+      animation: surge 0.8s ease 0.45s both;
+    }
+  }
+
+  @keyframes sobe {
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes acomoda {
+    from {
+      opacity: 0;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes surge {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* ---------- Trabalhos (índice de categorias) ---------- */
+  .trabalhos {
+    padding-block: 4rem 3rem;
+  }
+
+  .trabalhos h2,
+  .sobre h2 {
+    font-size: var(--t-lg);
+    color: var(--nevoa);
+    margin-bottom: 1.5rem;
+  }
+
+  .indice {
+    border-bottom: 1px solid var(--grafite);
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 1.5rem;
+    border-top: 1px solid var(--grafite);
+    text-decoration: none;
+  }
+
+  .item-texto {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .item-nome {
+    font-family: var(--fonte-titulo);
+    font-size: clamp(2.25rem, 1rem + 6.5vw, 5.5rem);
+    line-height: 1;
+    letter-spacing: -0.01em;
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.1, 1);
+  }
+
+  .item-desc {
+    color: var(--nevoa);
+    max-width: 38ch;
+  }
+
+  .item-total {
+    color: var(--nevoa);
+    font-size: var(--t-sm);
+  }
+
+  .item-capa {
+    width: 5.5rem;
+    height: 7.25rem;
+    object-fit: cover;
+    border-radius: 2px;
+    background: var(--carvao);
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.1, 1);
+  }
+
+  .item:hover .item-nome,
+  .item:focus-visible .item-nome {
+    transform: translateX(0.5rem);
+  }
+
+  .item:hover .item-capa,
+  .item:focus-visible .item-capa {
+    transform: rotate(-2deg) scale(1.04);
+  }
+
+  @media (min-width: 48rem) {
+    .trabalhos {
+      padding-block: 6rem 4rem;
+    }
+
+    .item {
+      padding-block: 2rem;
+    }
+
+    .item-capa {
+      width: 9rem;
+      height: 12rem;
+    }
+  }
+
+  /* ---------- Sobre ---------- */
+  .sobre {
+    padding-block: 3rem 5rem;
+  }
+
+  .sobre-texto {
+    display: grid;
+    gap: 1rem;
+    font-size: var(--t-lg);
+    line-height: 1.5;
+  }
+
+  @media (min-width: 48rem) {
+    .sobre {
+      padding-block: 4rem 7rem;
+    }
+
+    .sobre-grade {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 2rem;
+    }
+  }
+</style>

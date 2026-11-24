@@ -1,0 +1,51 @@
+---
+import { site } from '../data/site';
+import Icone from './Icone.astro';
+
+const ano = new Date().getFullYear();
+---
+
+<footer class="rodape">
+  <div class="contem linha">
+    <p>© {ano} {site.nome}. Todos os direitos reservados.</p>
+    <a href={site.instagram.url} target="_blank" rel="noopener noreferrer">
+      <Icone nome="instagram" tamanho={18} />
+      <span>@{site.instagram.usuario}</span>
+    </a>
+  </div>
+</footer>
+
+<style>
+  .rodape {
+    border-top: 1px solid var(--grafite);
+    padding-block: 2rem;
+    color: var(--nevoa);
+    font-size: var(--t-sm);
+  }
+
+  .linha {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--osso);
+  }
+
+  @media (min-width: 48rem) {
+    .linha {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+</style>
