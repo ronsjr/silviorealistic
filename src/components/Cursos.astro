@@ -1,0 +1,113 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+
+const cursos = (await getCollection('cursos')).sort((a, b) => a.data.ordem - b.data.ordem);
+---
+
+{
+  cursos.length > 0 && (
+    <section class="cursos" id="cursos" aria-labelledby="titulo-cursos">
+      <div class="contem">
+        <h2 id="titulo-cursos">Cursos e e-book</h2>
+        <ul class="lista">
+          {cursos.map((curso) => (
+            <li class="item">
+              <Image
+                class="capa"
+                src={curso.data.capa}
+                widths={[360, 540, 720]}
+                sizes="(min-width: 48rem) 22rem, 100vw"
+                alt={`Capa: ${curso.data.titulo}`}
+                loading="lazy"
+                decoding="async"
+              />
+              <div class="texto">
+                <p class="tipo">{curso.data.tipo}</p>
+                <h3>{curso.data.titulo}</h3>
+                <p class="descricao">{curso.data.descricao}</p>
+                <a
+                  class="botao botao--vazado"
+                  href={curso.data.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Ver na Hotmart
+                </a>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .cursos {
+    padding-block: 2rem 4rem;
+  }
+
+  h2 {
+    font-size: var(--t-lg);
+    color: var(--ouro);
+    margin-bottom: 1.25rem;
+  }
+
+  .lista {
+    border-bottom: 1px solid var(--grafite);
+  }
+
+  .item {
+    display: grid;
+    gap: 1.25rem;
+    padding-block: 1.75rem;
+    border-top: 1px solid var(--grafite);
+  }
+
+  .capa {
+    width: 100%;
+    max-width: 22rem;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 2px;
+    background: var(--carvao);
+  }
+
+  .texto {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: start;
+    align-content: start;
+  }
+
+  .tipo {
+    color: var(--nevoa);
+    font-size: var(--t-sm);
+  }
+
+  h3 {
+    font-size: var(--t-xl);
+  }
+
+  .descricao {
+    color: var(--nevoa);
+  }
+
+  .texto .botao {
+    margin-top: 0.5rem;
+  }
+
+  @media (min-width: 48rem) {
+    .cursos {
+      padding-block: 3rem 6rem;
+    }
+
+    .item {
+      grid-template-columns: 22rem 1fr;
+      align-items: center;
+      gap: 2.5rem;
+      padding-block: 2.5rem;
+    }
+  }
+</style>

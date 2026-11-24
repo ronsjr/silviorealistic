@@ -19,7 +19,7 @@ import sharp from 'sharp';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const entrada = path.resolve(process.argv[2] ?? path.join(RAIZ, 'originals', 'logo-insta.jpg'));
-const FUNDO_DO_SITE = '#111418';
+const FUNDO_DO_SITE = '#13110d';
 const LIMIAR = 14; // abaixo disso o pixel é considerado fundo preto (ruído de JPEG)
 // Ao trocar o fundo preto por transparência, os tons de dourado escuro ficam
 // "lavados". Realçar a opacidade em 60% devolve a riqueza do original sobre preto.

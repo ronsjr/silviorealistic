@@ -12,4 +12,20 @@ const categorias = defineCollection({
   }),
 });
 
-export const collections = { categorias };
+// Um curso (ou e-book) = um arquivo JSON em src/content/cursos/.
+// Título e descrição são extraídos da página do produto na Hotmart;
+// a capa fica em src/assets/cursos/ e o link leva à Hotmart.
+const cursos = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/cursos' }),
+  schema: ({ image }) =>
+    z.object({
+      tipo: z.string(),
+      titulo: z.string(),
+      descricao: z.string(),
+      link: z.string().url(),
+      capa: image(),
+      ordem: z.number(),
+    }),
+});
+
+export const collections = { categorias, cursos };

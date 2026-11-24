@@ -8,10 +8,6 @@ dist/
 originals/*
 !originals/README.md
 
-# Fotos PROVISORIAS (capas baixadas do perfil publico so' para revisar o layout).
-# Ficam apenas na maquina local, nunca vao para o git nem para o site publicado.
-src/assets/portfolio/*/provisorio-*
-
 # Ambiente e segredos (o site e estatico e nao deve precisar de nenhum)
 .env
 .env.*

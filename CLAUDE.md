@@ -26,18 +26,19 @@ Requer Node 20 (o da máquina de desenvolvimento). Sem Docker: o site é estáti
 - **Astro 5.x** (site estático, sem framework de UI), fixado na linha 5.18.x porque a máquina usa **Node 20** e o mantenedor não quer instalar nem trocar versões de Node. **Não atualizar para uma major nova do Astro** (a 7.x exige Node >= 22.23.4) sem decisão dele. No GitHub Actions usar também Node 20, igual ao local.
 - **CSS puro** com variáveis (design tokens em `src/styles/global.css`), mais estilos escopados em cada componente `.astro`. **Sem React e sem Tailwind**, por decisão.
 - JavaScript só onde é necessário: lightbox da galeria (**PhotoSwipe**, com zoom por pinça). O resto é HTML/CSS.
-- Fontes **dentro do site** via Fontsource (Gloock nos títulos, Hanken Grotesk no texto), sem chamadas ao Google.
+- Fontes **dentro do site** via Fontsource (Gloock nos títulos, Hanken Grotesk no texto, Cinzel no nome da marca), sem chamadas ao Google.
 - O `npm install` mostra um aviso de engine do `undici@8` (dependência interna do Astro usada só pelo recurso experimental de fontes, que não usamos). É inofensivo no Node 20.
 - Histórico e motivos das decisões: `memory/decisions.md`.
 
 ## Design
 
 - **Mobile first**: o CSS base é o do celular e as telas maiores ampliam com `min-width` (48rem e 80rem). Alvos de toque com no mínimo 44 px. Respeitar `prefers-reduced-motion`.
-- **Tema escuro** e neutro, porque o trabalho do Silvio é **realismo colorido, muito vivo, em fotos verticais** (braços e pernas): a moldura não pode competir com as fotos. Tinta `#111418` (fundo), Carvão `#181c22`, Grafite `#2b313a` (linhas), Osso `#ece7dd` (texto), Névoa `#a3a9b3` (texto secundário), **Ouro `#dfc053`** (o dourado da logo do estúdio; só em foco, hover e seleção).
-- **Navegação**: cabeçalho fixo com a logo, botão Orçamento e **menu lateral** (`<dialog>` nativo, no componente `Cabecalho`) que lista todas as categorias de qualquer página, então escala para muitas categorias sem exigir rolagem. A home mostra o trabalho logo na primeira tela: nome grande e fotos de destaque (faixa que se arrasta no celular, mosaico no desktop), depois as categorias em tiles com foto.
+- **Tema escuro** e neutro, porque o trabalho do Silvio é **realismo colorido, muito vivo, em fotos verticais** (braços e pernas): a moldura não pode competir com as fotos. O fundo é um preto **quente**, derivado dos tons da logo (a umbra escura do emblema `#342711` clareia até o ouro `#d8b442`): Tinta `#13110d` (fundo), Carvão `#1c1913`, Grafite `#352e20` (linhas), Osso `#ece7dd` (texto), Névoa `#aaa292` (texto secundário). O **Ouro `#dfc053`** marca as ações: botão principal (cheio em ouro), títulos de seção, foco, hover e seleção. O site continua predominantemente escuro.
+- **Navegação**: cabeçalho fixo com a logo (grande no topo da página, encolhe ao rolar) e o **menu lateral** (`<dialog>` nativo, no componente `Cabecalho`) que lista todas as categorias de qualquer página. Não há botão de orçamento no cabeçalho: o pedido fica no corpo da página e no menu, então escala para muitas categorias sem exigir rolagem. A home mostra o trabalho logo na primeira tela: nome grande e fotos de destaque (faixa que se arrasta no celular, mosaico no desktop), depois as categorias em tiles com foto.
 - Como as fotos são verticais, **não usar hero com foto horizontal em tela cheia** (corta a foto). Um único movimento automático: a entrada do nome no hero. Evitar rótulos em caixa-alta, numeração decorativa e setas nos botões.
 - **Rodapé** em todas as páginas termina com a faixa de crédito "Copyright © ano Silvio Muniz | Powered by Raccoon Digital", no formato usado nos outros projetos do mantenedor (uma linha, fonte fluida).
-- **Logo**: o arquivo recebido tem só 150 px, então só serve em tamanho pequeno (cabeçalho, menu, rodapé, ícone). Pedir ao Silvio uma versão grande ou em vetor e rodar `npm run logo`.
+- **Logo**: o arquivo recebido tem só 150 px, então não passa de ~80 px na tela (cabeçalho no topo da página; menu e ícones menores). **Não aparece no rodapé** (lá só o nome). Pedir ao Silvio uma versão grande ou em vetor e rodar `npm run logo`.
+- **Nome da marca** ("SILVIO MUNIZ" no cabeçalho, menu e rodapé) em Cinzel, letras romanas como a faixa da logo; títulos em Gloock; texto em Hanken Grotesk.
 - Botões: cheio (Osso) com hover invertido, como o botão de WhatsApp de outros projetos do mantenedor. Classes globais `.botao` e `.botao--vazado`.
 
 ## Conteúdo
@@ -46,14 +47,15 @@ Requer Node 20 (o da máquina de desenvolvimento). Sem Docker: o site é estáti
 - **Fotos**: `src/assets/portfolio/<slug>/*.jpg`. Basta colocar o arquivo na pasta que ele aparece na galeria (ordem alfabética). A primeira foto da categoria é a capa do tile; a home mostra até 6 fotos de destaque (uma de cada categoria por rodada).
 - **Dados gerais** (nome, Instagram, WhatsApp, `noindex`): `src/data/site.ts`.
 - As categorias atuais (Realismo, Cover up, Fechamentos) e seus textos são **provisórios**, inspirados nos destaques do Instagram. O Silvio define as definitivas.
-- As fotos `teste-*.jpg` são **imagens de teste geradas**, não trabalhos dele. Elas somem sozinhas de uma categoria assim que ela recebe qualquer foto real; para apagar os arquivos: `npm run imagens:teste -- --limpar`.
-- As fotos `provisorio-*.jpg` são capas de reels baixadas do perfil público do Instagram (360 px) **só para revisar o layout**. Estão no `.gitignore`: existem apenas na máquina local, não vão para o git nem para o site publicado (têm baixa resolução e mostram corpos de clientes). Apagar quando chegarem as fotos reais.
+- As imagens de teste (`teste-*.jpg`, geradas por `npm run imagens:teste`) foram removidas do repositório; o script continua disponível. Elas somem sozinhas de uma categoria que tenha fotos reais.
+- As fotos `provisorio-*.jpg` são capas de reels baixadas do perfil público do Instagram (360 px), usadas **como placeholders** até o Silvio mandar os originais. A publicação foi autorizada pelo mantenedor em 2026-11-24. Estão distribuídas de forma arbitrária entre as 3 categorias provisórias. **Substituir pelas fotos reais** (e apagar estas) assim que chegarem.
+- **Cursos**: `src/content/cursos/*.json` (`tipo`, `titulo`, `descricao`, `link`, `capa`, `ordem`), com as capas em `src/assets/cursos/`. Títulos e descrições foram extraídos das páginas dos produtos na Hotmart (pontuação dos títulos ajustada) e os links são os da bio do Instagram, que levam à Hotmart. Aparecem na seção "Cursos e e-book" da home e no menu.
 
 ## Regras de imagens (obrigatórias)
 
 O repositório é público e o risco real é cópia indevida das fotos. Portanto:
 
-1. **Originais em alta resolução ficam só em `originals/`**, ignorada pelo git. Nunca commitar. As fotos vêm do próprio Silvio. Não raspar o Instagram; a única exceção são as capas provisórias locais descritas em "Conteúdo", que nunca são versionadas.
+1. **Originais em alta resolução ficam só em `originals/`**, ignorada pelo git. Nunca commitar. As fotos vêm do próprio Silvio. Não raspar o Instagram; a única exceção são as capas provisórias descritas em "Conteúdo", baixadas uma vez, sem login, e a substituir.
 2. O fluxo é `originals/<categoria>/foto.jpg` → `npm run imagens` → `src/assets/portfolio/<categoria>/foto.jpg`. O script **remove todos os metadados** (inclusive GPS, validado em teste), aplica a rotação do EXIF, reduz para no máximo 1600 px e aplica **marca d'água** discreta (`@silviorealistictattoo`, mudável por `MARCA_DAGUA`). Aceita jpg, jpeg, png e webp.
 3. Só `src/assets/` é versionado. O Astro ainda converte para WebP no build.
 4. Sem licença open source no repositório (todos os direitos reservados por padrão).
@@ -87,9 +89,11 @@ silviorealistic/
 ├── public/                  favicon.png, apple-touch-icon.png (e CNAME no futuro)
 └── src/
     ├── assets/marca/logo.png           logo do estúdio (fundo transparente)
+    ├── assets/cursos/                  capas dos cursos (extraídas da Hotmart)
     ├── assets/portfolio/<categoria>/   fotos publicáveis
-    ├── components/          Cabecalho, Rodape, Orcamento, BotaoWhatsapp, Icone
+    ├── components/          Cabecalho, Rodape, Orcamento, Cursos, BotaoWhatsapp, Icone
     ├── content/categorias/  uma categoria por JSON
+    ├── content/cursos/      um curso ou e-book por JSON
     ├── data/site.ts         nome, Instagram, WhatsApp, noindex
     ├── layouts/Base.astro
     ├── lib/                 url.ts, portfolio.ts

@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Orcamento from '../components/Orcamento.astro';
+import Cursos from '../components/Cursos.astro';
 import BotaoWhatsapp from '../components/BotaoWhatsapp.astro';
 import { site } from '../data/site';
 import { url } from '../lib/url';
@@ -114,6 +115,8 @@ const [primeiroNome, ...demaisNomes] = site.nome.split(' ');
       </div>
     </div>
   </section>
+
+  <Cursos />
 
   <Orcamento />
 </Base>
@@ -273,7 +276,7 @@ const [primeiroNome, ...demaisNomes] = site.nome.split(' ');
   .trabalhos h2,
   .sobre h2 {
     font-size: var(--t-lg);
-    color: var(--nevoa);
+    color: var(--ouro);
     margin-bottom: 1.25rem;
   }
 
@@ -311,8 +314,8 @@ const [primeiroNome, ...demaisNomes] = site.nome.split(' ');
     z-index: -1;
     background: linear-gradient(
       to top,
-      rgb(17 20 24 / 0.92) 0%,
-      rgb(17 20 24 / 0.35) 38%,
+      color-mix(in srgb, var(--tinta) 92%, transparent) 0%,
+      color-mix(in srgb, var(--tinta) 35%, transparent) 38%,
       transparent 62%
     );
   }

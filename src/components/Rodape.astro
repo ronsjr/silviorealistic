@@ -1,6 +1,4 @@
 ---
-import { Image } from 'astro:assets';
-import logo from '../assets/marca/logo.png';
 import { site } from '../data/site';
 import { url } from '../lib/url';
 import Icone from './Icone.astro';
@@ -10,10 +8,7 @@ const ano = new Date().getFullYear();
 
 <footer class="rodape">
   <div class="contem topo">
-    <a class="marca" href={url()}>
-      <Image src={logo} width={44} height={44} densities={[2, 3]} alt="" />
-      <span>{site.nome}</span>
-    </a>
+    <a class="marca" href={url()}>{site.nome}</a>
     <a class="insta" href={site.instagram.url} target="_blank" rel="noopener noreferrer">
       <Icone nome="instagram" tamanho={18} />
       <span>@{site.instagram.usuario}</span>
@@ -49,8 +44,11 @@ const ano = new Date().getFullYear();
 
   .marca {
     color: var(--osso);
-    font-family: var(--fonte-titulo);
-    font-size: var(--t-lg);
+    font-family: var(--fonte-marca);
+    font-size: var(--t-sm);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
   }
 
   .insta:hover {
