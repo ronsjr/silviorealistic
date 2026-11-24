@@ -1,0 +1,22 @@
+# Dependencias e build
+node_modules/
+dist/
+.astro/
+
+# Fotos ORIGINAIS (alta resolucao): NUNCA versionar. Ficam so na maquina local.
+# O repositorio e PUBLICO; so as versoes reduzidas e com marca d'agua vao para src/assets/.
+originals/*
+!originals/README.md
+
+# Ambiente e segredos (o site e estatico e nao deve precisar de nenhum)
+.env
+.env.*
+!.env.example
+
+# Sistema, editor e logs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+.claude/settings.local.json
