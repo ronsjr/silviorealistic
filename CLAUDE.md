@@ -5,13 +5,13 @@
 
 ## O que é
 
-Site de portfólio pessoal de **Silvio Muniz** (Instagram: Silvio Realistic), artista tatuador de arte realista. Organizado em categorias de trabalhos (as categorias ainda serão definidas por ele). Idioma do site e da documentação: **português brasileiro**.
+Site de portfólio pessoal de **Silvio Muniz** (Instagram: `@silviorealistictattoo`), artista tatuador de arte realista. Organizado em categorias de trabalhos (as categorias ainda serão definidas por ele). Idioma do site e da documentação: **português brasileiro**.
 
 Quem mantém o site e atualiza o conteúdo: o mantenedor do site. O Silvio é o dono do portfólio.
 
 ## Stack
 
-- **Astro** (site estático, sem framework de UI). Versão definida no `package.json`.
+- **Astro 5.x** (site estático, sem framework de UI), fixado na linha 5.18.x porque a máquina usa **Node 20.19.6** e o mantenedor não quer instalar nem trocar versões de Node. **Não atualizar para uma major nova do Astro** (a 7.x exige Node >= 22.23.4) sem decisão dele. No GitHub Actions usar também Node 20, igual ao local.
 - **CSS puro** com variáveis (design tokens). **Sem React e sem Tailwind**, por decisão.
 - JavaScript só onde for necessário (lightbox da galeria). Preferir HTML/CSS.
 - **Mobile first**: escrever o CSS base para celular e ampliar com `min-width` para telas maiores.
@@ -22,7 +22,7 @@ Quem mantém o site e atualiza o conteúdo: o mantenedor do site. O Silvio é o 
 
 - **GitHub Pages**, com deploy por GitHub Actions a cada push na `main`.
 - URL provisória: `https://ronsjr.github.io/silviorealistic/`. Por isso o `astro.config` usa `site` e `base`. Todos os links internos e de assets devem respeitar o `base` (usar `import.meta.env.BASE_URL`).
-- Domínio próprio ainda não existe. Quando existir: criar `public/CNAME`, ajustar `site`, remover `base` e apontar o DNS.
+- Domínio provável: `silviorealistictattoo.com.br` (consta no link da bio do Instagram do Silvio e hoje está estacionado na Hostinger; confirmar titularidade e acesso ao DNS). Ao conectar: criar `public/CNAME`, ajustar `site`, remover `base` e apontar o DNS no painel da Hostinger.
 - Plano B se o GitHub Pages não servir: **Cloudflare Pages** (aceita repositório privado).
 
 ## Regras de imagens (obrigatórias)

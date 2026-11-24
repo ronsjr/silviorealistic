@@ -17,10 +17,12 @@ Registro cronológico das decisões e do motivo. Conteúdo estritamente técnico
 | Contato | Botões de WhatsApp (não flutuantes, estilo de outro projeto do mantenedor) e link do Instagram | Sem formulário nem backend. |
 | Volume | Algumas centenas de fotos, sem passar disso | Cabe no limite do GitHub Pages. |
 | CMS | Adiar; avaliar Pages CMS ou Sveltia CMS | o mantenedor atualiza o site por enquanto. Manter conteúdo em arquivos de dados para facilitar a adoção. |
-| Domínio | Ainda não existe | Usar `site` + `base` agora; trocar quando o domínio chegar. |
+| Domínio | `silviorealistictattoo.com.br` existe e está estacionado na Hostinger (achado no link da bio do Instagram, em 2026-11-24). Titularidade e acesso ao DNS ainda a confirmar com o Silvio | Usar `site` + `base` agora; ao conectar, apontar o DNS no painel da Hostinger. |
+| Origem das fotos | Originais enviados pelo próprio Silvio. **Não** raspar o Instagram | Perfil público só entrega capas de reels (360 px) e o restante exige login; automatizar a coleta viola os termos do Instagram e a qualidade (máx. ~1080 px, comprimida, sem EXIF) fica abaixo do necessário. Para desenvolver o layout, usar imagens de teste geradas localmente. |
+| Node e versão do Astro | **Node 20.19.6 (o da máquina) e Astro 5.18.x** | o mantenedor não quer mexer em versões de Node nem ter várias no computador (risco de quebrar outros projetos). O Astro 7.x exige Node >= 22.23.4. Não atualizar o Astro para uma major que exija Node mais novo sem nova decisão. |
 
 ## Pendências
 
-- Versão do Node: o Astro mais recente (7.x) exige Node >= 22.23.4. A máquina de desenvolvimento está em Node 20.19.6 (fim de vida em abril de 2026). Decisão pendente: instalar Node 22 (via gerenciador de versões) ou usar Astro 5.18.x.
+- Node 20 saiu de suporte em abril de 2026. Quando o mantenedor decidir atualizar o Node da máquina, reavaliar a migração para o Astro mais recente.
 - Categorias, textos, fotos, número de WhatsApp e @ do Instagram: aguardando o Silvio.
 - Marca d'água: definir texto/logotipo e posição.
