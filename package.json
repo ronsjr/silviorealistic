@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "imagens": "node scripts/processar-imagens.mjs",
+    "logo": "node scripts/preparar-logo.mjs",
     "imagens:teste": "node scripts/gerar-imagens-teste.mjs"
   },
   "dependencies": {

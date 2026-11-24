@@ -6,7 +6,7 @@ import Orcamento from '../components/Orcamento.astro';
 import BotaoWhatsapp from '../components/BotaoWhatsapp.astro';
 import { site } from '../data/site';
 import { url } from '../lib/url';
-import { fotosDaCategoria } from '../lib/portfolio';
+import { fotosDaCategoria, destaquesDaHome } from '../lib/portfolio';
 
 const categorias = (await getCollection('categorias')).sort((a, b) => a.data.ordem - b.data.ordem);
 
@@ -14,75 +14,84 @@ const lista = categorias.map((categoria) => {
   const fotos = fotosDaCategoria(categoria.id);
   return {
     id: categoria.id,
-    ...categoria.data,
+    titulo: categoria.data.titulo,
     total: fotos.length,
     capa: fotos[0]?.imagem,
   };
 });
 
-// A foto de abertura é a primeira foto da primeira categoria que tiver fotos.
-const fotoHero = lista.find((categoria) => categoria.capa)?.capa;
+const destaques = destaquesDaHome(lista.map(({ id, titulo }) => ({ id, titulo })));
 
 const [primeiroNome, ...demaisNomes] = site.nome.split(' ');
 ---
 
 <Base>
   <section class="hero">
-    {
-      fotoHero && (
-        <Image
-          class="hero-foto"
-          src={fotoHero}
-          widths={[640, 960, 1440, 1920]}
-          sizes="100vw"
-          alt=""
-          loading="eager"
-          fetchpriority="high"
-        />
-      )
-    }
-    <div class="contem hero-texto">
-      <h1>
-        <span class="linha"><span>{primeiroNome}</span></span>
-        <span class="linha"><span>{demaisNomes.join(' ')}</span></span>
-      </h1>
-      <p class="hero-sub">{site.descricao}</p>
-      <div class="acoes">
-        <a class="botao botao--vazado" href="#trabalhos">Ver trabalhos</a>
-        <BotaoWhatsapp rotulo="Pedir orçamento" />
+    <div class="contem hero-grade">
+      <div class="hero-texto">
+        <h1>
+          <span class="linha"><span>{primeiroNome}</span></span>
+          <span class="linha"><span>{demaisNomes.join(' ')}</span></span>
+        </h1>
+        <p class="hero-sub">{site.descricao}</p>
+        <div class="acoes">
+          <a class="botao botao--vazado" href="#trabalhos">Ver trabalhos</a>
+          <BotaoWhatsapp rotulo="Pedir orçamento" />
+        </div>
       </div>
+
+      {
+        destaques.length > 0 && (
+          <ul class="destaques" aria-label="Alguns trabalhos">
+            {destaques.map((destaque, indice) => (
+              <li style={`--i:${indice}`}>
+                <a href={url(`trabalhos/${destaque.categoriaId}/`)}>
+                  <Image
+                    src={destaque.imagem}
+                    widths={[360, 540, 720, 960]}
+                    sizes="(min-width: 64rem) 22vw, (min-width: 48rem) 34vw, 64vw"
+                    alt={`Trabalho de ${destaque.categoria}`}
+                    loading={indice < 3 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </div>
   </section>
 
   <section class="trabalhos" id="trabalhos" aria-labelledby="titulo-trabalhos">
     <div class="contem">
       <h2 id="titulo-trabalhos">Trabalhos</h2>
-      <ul class="indice">
+      <ul class="grade">
         {
           lista.map((categoria) => (
             <li>
-              <a class="item" href={url(`trabalhos/${categoria.id}/`)}>
-                <span class="item-texto">
-                  <span class="item-nome">{categoria.titulo}</span>
-                  <span class="item-desc">{categoria.descricao}</span>
-                  <span class="item-total">
+              <a class="tile" href={url(`trabalhos/${categoria.id}/`)}>
+                {categoria.capa ? (
+                  <Image
+                    class="tile-foto"
+                    src={categoria.capa}
+                    widths={[360, 540, 720]}
+                    sizes="(min-width: 80rem) 25vw, (min-width: 48rem) 33vw, 50vw"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <span class="tile-foto" aria-hidden="true" />
+                )}
+                <span class="tile-texto">
+                  <span class="tile-nome">{categoria.titulo}</span>
+                  <span class="tile-total">
                     {categoria.total > 0
                       ? `${categoria.total} ${categoria.total === 1 ? 'trabalho' : 'trabalhos'}`
                       : 'Em breve'}
                   </span>
                 </span>
-                {categoria.capa ? (
-                  <Image
-                    class="item-capa"
-                    src={categoria.capa}
-                    width={288}
-                    height={384}
-                    alt=""
-                    loading="lazy"
-                  />
-                ) : (
-                  <span class="item-capa item-capa--vazia" aria-hidden="true" />
-                )}
               </a>
             </li>
           ))
@@ -96,7 +105,8 @@ const [primeiroNome, ...demaisNomes] = site.nome.split(' ');
       <h2 id="titulo-sobre">Sobre</h2>
       <div class="sobre-texto">
         <p>
-          Silvio Muniz é tatuador no Rio de Janeiro e trabalha com realismo e cover up.
+          Silvio Muniz é tatuador no Rio de Janeiro e trabalha com realismo e cover up. Também
+          ensina realismo em cursos on-line.
         </p>
         <p>
           Mande uma mensagem com a sua ideia e o local do corpo para receber um orçamento.
@@ -111,42 +121,23 @@ const [primeiroNome, ...demaisNomes] = site.nome.split(' ');
 <style>
   /* ---------- Hero ---------- */
   .hero {
-    position: relative;
-    isolation: isolate;
+    padding-top: calc(var(--topo) + 1.5rem);
+    padding-bottom: 3rem;
+  }
+
+  .hero-grade {
     display: grid;
-    align-items: end;
-    min-height: 100svh;
-    padding-top: var(--topo);
-    padding-bottom: 2.5rem;
-    overflow: hidden;
-  }
-
-  .hero::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background:
-      linear-gradient(to bottom, rgb(17 20 24 / 0.7), transparent 28%),
-      linear-gradient(to top, var(--tinta) 6%, rgb(17 20 24 / 0.3) 60%);
-  }
-
-  .hero-foto {
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    gap: 2rem;
   }
 
   .hero-texto {
     display: grid;
     gap: 1.25rem;
+    align-content: center;
   }
 
   h1 {
-    font-size: clamp(4rem, 1rem + 20vw, 12rem);
+    font-size: clamp(3.75rem, 0.5rem + 17vw, 9rem);
     line-height: 0.92;
     letter-spacing: -0.02em;
   }
@@ -163,7 +154,6 @@ const [primeiroNome, ...demaisNomes] = site.nome.split(' ');
 
   .hero-sub {
     font-size: var(--t-lg);
-    color: var(--osso);
     max-width: 28ch;
   }
 
@@ -171,7 +161,44 @@ const [primeiroNome, ...demaisNomes] = site.nome.split(' ');
     margin-top: 0.5rem;
   }
 
-  /* Único movimento da página: o nome sobe de dentro da máscara e a foto se acomoda. */
+  /* Fotos de abertura: faixa que se arrasta no celular, mosaico no desktop. */
+  .destaques {
+    display: flex;
+    gap: 0.5rem;
+    margin-inline: calc(var(--margem) * -1);
+    padding-inline: var(--margem);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--margem);
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .destaques::-webkit-scrollbar {
+    display: none;
+  }
+
+  .destaques li {
+    flex: 0 0 64%;
+    scroll-snap-align: start;
+  }
+
+  .destaques a {
+    display: block;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: 2px;
+    background: var(--carvao);
+  }
+
+  .destaques img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Único movimento automático da página: o nome sobe de dentro da máscara
+     e as fotos surgem em sequência. */
   @media (prefers-reduced-motion: no-preference) {
     .linha > span {
       transform: translateY(105%);
@@ -182,13 +209,14 @@ const [primeiroNome, ...demaisNomes] = site.nome.split(' ');
       animation-delay: 0.12s;
     }
 
-    .hero-foto {
-      animation: acomoda 1.6s cubic-bezier(0.2, 0.7, 0.1, 1) both;
-    }
-
     .hero-sub,
     .hero .acoes {
-      animation: surge 0.8s ease 0.45s both;
+      animation: surge 0.8s ease 0.4s both;
+    }
+
+    .destaques li {
+      animation: surge 0.9s ease both;
+      animation-delay: calc(0.35s + var(--i) * 0.09s);
     }
   }
 
@@ -198,105 +226,145 @@ const [primeiroNome, ...demaisNomes] = site.nome.split(' ');
     }
   }
 
-  @keyframes acomoda {
-    from {
-      opacity: 0;
-      transform: scale(1.05);
-    }
-  }
-
   @keyframes surge {
     from {
       opacity: 0;
     }
   }
 
-  /* ---------- Trabalhos (índice de categorias) ---------- */
+  @media (min-width: 48rem) {
+    .destaques li {
+      flex-basis: 34%;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .hero {
+      padding-top: calc(var(--topo) + 3rem);
+      padding-bottom: 5rem;
+    }
+
+    .hero-grade {
+      grid-template-columns: 5fr 7fr;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    .destaques {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-inline: 0;
+      padding-inline: 0;
+      overflow: visible;
+      scroll-snap-type: none;
+    }
+
+    .destaques li:nth-child(3n + 2) {
+      transform: translateY(2.5rem);
+    }
+  }
+
+  /* ---------- Trabalhos (categorias) ---------- */
   .trabalhos {
-    padding-block: 4rem 3rem;
+    padding-block: 3rem;
   }
 
   .trabalhos h2,
   .sobre h2 {
     font-size: var(--t-lg);
     color: var(--nevoa);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
   }
 
-  .indice {
-    border-bottom: 1px solid var(--grafite);
-  }
-
-  .item {
+  .grade {
     display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 1rem;
-    padding-block: 1.5rem;
-    border-top: 1px solid var(--grafite);
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .tile {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    isolation: isolate;
+    border-radius: 2px;
+    background: var(--carvao);
     text-decoration: none;
   }
 
-  .item-texto {
+  .tile-foto {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.1, 1);
+  }
+
+  .tile::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      to top,
+      rgb(17 20 24 / 0.92) 0%,
+      rgb(17 20 24 / 0.35) 38%,
+      transparent 62%
+    );
+  }
+
+  .tile-texto {
+    position: absolute;
+    inset: auto 0 0 0;
     display: grid;
-    gap: 0.35rem;
+    gap: 0.15rem;
+    padding: 0.9rem;
   }
 
-  .item-nome {
+  .tile-nome {
     font-family: var(--fonte-titulo);
-    font-size: clamp(2.25rem, 1rem + 6.5vw, 5.5rem);
-    line-height: 1;
-    letter-spacing: -0.01em;
-    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.1, 1);
+    font-size: clamp(1.5rem, 1rem + 2.4vw, 2.5rem);
+    line-height: 1.05;
   }
 
-  .item-desc {
-    color: var(--nevoa);
-    max-width: 38ch;
-  }
-
-  .item-total {
+  .tile-total {
     color: var(--nevoa);
     font-size: var(--t-sm);
   }
 
-  .item-capa {
-    width: 5.5rem;
-    height: 7.25rem;
-    object-fit: cover;
-    border-radius: 2px;
-    background: var(--carvao);
-    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.1, 1);
-  }
-
-  .item:hover .item-nome,
-  .item:focus-visible .item-nome {
-    transform: translateX(0.5rem);
-  }
-
-  .item:hover .item-capa,
-  .item:focus-visible .item-capa {
-    transform: rotate(-2deg) scale(1.04);
+  .tile:hover .tile-foto,
+  .tile:focus-visible .tile-foto {
+    transform: scale(1.05);
   }
 
   @media (min-width: 48rem) {
     .trabalhos {
-      padding-block: 6rem 4rem;
+      padding-block: 4.5rem;
     }
 
-    .item {
-      padding-block: 2rem;
+    .grade {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
     }
 
-    .item-capa {
-      width: 9rem;
-      height: 12rem;
+    .tile-texto {
+      padding: 1.25rem;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .grade {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 
   /* ---------- Sobre ---------- */
   .sobre {
-    padding-block: 3rem 5rem;
+    padding-block: 2rem 4.5rem;
   }
 
   .sobre-texto {
@@ -308,7 +376,7 @@ const [primeiroNome, ...demaisNomes] = site.nome.split(' ');
 
   @media (min-width: 48rem) {
     .sobre {
-      padding-block: 4rem 7rem;
+      padding-block: 3rem 6rem;
     }
 
     .sobre-grade {

@@ -25,9 +25,13 @@ Registro das decisões e do motivo. Conteúdo estritamente técnico (o repositó
 
 | Tema | Decisão | Motivo |
 |---|---|---|
-| Paleta | Tinta `#111418`, Carvão `#181c22`, Grafite `#2b313a`, Osso `#ece7dd`, Névoa `#a3a9b3`, Azul-tinta `#8fafd1` | O azul vem do ofício (preto envelhecido sob a pele). Sem acento saturado: a cor da página são as fotos. |
+| Paleta (revisada) | Tinta `#111418`, Carvão `#181c22`, Grafite `#2b313a`, Osso `#ece7dd`, Névoa `#a3a9b3`, **Ouro `#dfc053`** | Substitui o azul-tinta, que partia de uma suposição de preto e cinza. As fotos reais são coloridas e vivas, então a moldura fica neutra; o ouro vem da logo do estúdio e só aparece em foco e hover. |
 | Tipografia | **Gloock** (títulos) + **Hanken Grotesk** (texto), hospedadas no próprio site (Fontsource) | Serifa de contraste forte lembra chiaroscuro; sem chamada ao Google (desempenho e privacidade). |
-| Elemento memorável | Índice de categorias em tipografia grande, em vez de grade de cards | Diferencia o site do visual padrão de portfólio. |
+| Navegação (revisada) | Cabeçalho fixo + **menu lateral** (hambúrguer, `<dialog>` nativo) com todas as categorias | Feedback do mantenedor: a navegação era confusa e rolar para achar categorias não escala. O menu dá acesso a qualquer categoria de qualquer página. |
+| Home (revisada) | Nome + fotos de destaque no topo (faixa arrastável no celular, mosaico no desktop) e categorias em **tiles com foto** | O índice em linhas de texto gigante ficava longo com muitas categorias e não mostrava imagens. Fotos verticais não cabem em hero horizontal de tela cheia. |
+| Rodapé | Faixa "Copyright © ano Silvio Muniz \| Powered by Raccoon Digital" em todas as páginas | Pedido do mantenedor, no mesmo formato dos outros projetos. |
+| Logo | Emblema dourado do estúdio, fundo preto removido por script (`npm run logo`), usado em cabeçalho, menu, rodapé e ícone | Arquivo recebido tem só 150 px: serve apenas em tamanho pequeno. Pedir versão grande ou vetor. |
+| Capas provisórias | 9 capas de reels do perfil público do Instagram, **só locais** (`provisorio-*.jpg`, no `.gitignore`) | Exceção pedida pelo mantenedor para revisar o layout com fotos reais. Não versionar nem publicar: 360 px e mostram corpos de clientes. Excluídas as 2 com a faixa "PRO TEAM". |
 | Galeria | Mosaico em colunas (2, 3 e 4) + **PhotoSwipe** | Mantém a proporção original das fotos; zoom por pinça é importante para ver detalhe de realismo. |
 | Conteúdo | Categorias em JSON (content collection) e fotos por pasta | Adicionar categoria ou foto não exige mexer em código; facilita um CMS depois. |
 | Em construção | `noindex` ligado e WhatsApp sem número real | Evitar indexação do site provisório e mensagens para número errado. |
@@ -38,6 +42,8 @@ Registro das decisões e do motivo. Conteúdo estritamente técnico (o repositó
 
 - Número de WhatsApp de orçamento do Silvio (confirmar com ele) e o texto da marca d'água definitivo.
 - Categorias, textos e fotos originais do Silvio. Marca d'água atual: `@silviorealistictattoo`.
-- Fotos de abertura (hero) e retrato para a seção Sobre.
+- Logo em alta resolução ou vetor (a atual tem 150 px).
+- Confirmar com o Silvio antes de usar no site: "artista patrocinado pela Intenze" (consta na página do curso dele) e uma seção de cursos/e-book (links da bio levam à Hotmart). Os links da bio para a Intenze e o Monster Crawling estavam mortos em 2026-11-24.
+- Retrato para a seção Sobre.
 - Registrar o domínio novo e conectar ao GitHub Pages.
 - Node 20 saiu de suporte em abril de 2026. Quando o mantenedor decidir atualizar o Node da máquina, reavaliar a migração para o Astro mais recente.

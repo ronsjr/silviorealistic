@@ -18,6 +18,7 @@ Requer Node 20 (o da máquina de desenvolvimento). Sem Docker: o site é estáti
 | `npm run build` | Gera o site em `dist/` |
 | `npm run preview` | Serve o `dist/` (conferir o build antes de publicar) |
 | `npm run imagens` | Processa `originals/` e grava em `src/assets/portfolio/` (marca d'água, sem EXIF) |
+| `npm run logo` | Prepara a logo (fundo transparente e ícones do navegador) a partir de `originals/logo-insta.jpg`; aceita outro arquivo: `npm run logo -- caminho.png` |
 | `npm run imagens:teste` | Gera imagens de teste. Com `-- --limpar` remove `teste-*.jpg` |
 
 ## Stack
@@ -32,23 +33,27 @@ Requer Node 20 (o da máquina de desenvolvimento). Sem Docker: o site é estáti
 ## Design
 
 - **Mobile first**: o CSS base é o do celular e as telas maiores ampliam com `min-width` (48rem e 80rem). Alvos de toque com no mínimo 44 px. Respeitar `prefers-reduced-motion`.
-- **Tema escuro**, com cores tiradas do ofício: Tinta `#111418` (fundo), Carvão `#181c22`, Grafite `#2b313a` (linhas), Osso `#ece7dd` (texto), Névoa `#a3a9b3` (texto secundário), Azul-tinta `#8fafd1` (foco e hover; o preto da tatuagem envelhece azulado sob a pele). Sem acento saturado: as fotos são a única cor da página.
-- **Elemento memorável**: o índice de categorias em tipografia grande (home). Um único movimento automático, a entrada do nome no hero. Evitar rótulos em caixa-alta, numeração decorativa, setas nos botões e cards idênticos.
+- **Tema escuro** e neutro, porque o trabalho do Silvio é **realismo colorido, muito vivo, em fotos verticais** (braços e pernas): a moldura não pode competir com as fotos. Tinta `#111418` (fundo), Carvão `#181c22`, Grafite `#2b313a` (linhas), Osso `#ece7dd` (texto), Névoa `#a3a9b3` (texto secundário), **Ouro `#dfc053`** (o dourado da logo do estúdio; só em foco, hover e seleção).
+- **Navegação**: cabeçalho fixo com a logo, botão Orçamento e **menu lateral** (`<dialog>` nativo, no componente `Cabecalho`) que lista todas as categorias de qualquer página, então escala para muitas categorias sem exigir rolagem. A home mostra o trabalho logo na primeira tela: nome grande e fotos de destaque (faixa que se arrasta no celular, mosaico no desktop), depois as categorias em tiles com foto.
+- Como as fotos são verticais, **não usar hero com foto horizontal em tela cheia** (corta a foto). Um único movimento automático: a entrada do nome no hero. Evitar rótulos em caixa-alta, numeração decorativa e setas nos botões.
+- **Rodapé** em todas as páginas termina com a faixa de crédito "Copyright © ano Silvio Muniz | Powered by Raccoon Digital", no formato usado nos outros projetos do mantenedor (uma linha, fonte fluida).
+- **Logo**: o arquivo recebido tem só 150 px, então só serve em tamanho pequeno (cabeçalho, menu, rodapé, ícone). Pedir ao Silvio uma versão grande ou em vetor e rodar `npm run logo`.
 - Botões: cheio (Osso) com hover invertido, como o botão de WhatsApp de outros projetos do mantenedor. Classes globais `.botao` e `.botao--vazado`.
 
 ## Conteúdo
 
 - **Categorias**: um arquivo `src/content/categorias/<slug>.json` com `titulo`, `descricao` e `ordem`. O `<slug>` vira a URL (`/trabalhos/<slug>/`) e o nome da pasta de fotos.
-- **Fotos**: `src/assets/portfolio/<slug>/*.jpg`. Basta colocar o arquivo na pasta que ele aparece na galeria (ordem alfabética). A primeira foto da categoria é a capa no índice; a da primeira categoria é a foto de abertura da home.
+- **Fotos**: `src/assets/portfolio/<slug>/*.jpg`. Basta colocar o arquivo na pasta que ele aparece na galeria (ordem alfabética). A primeira foto da categoria é a capa do tile; a home mostra até 6 fotos de destaque (uma de cada categoria por rodada).
 - **Dados gerais** (nome, Instagram, WhatsApp, `noindex`): `src/data/site.ts`.
 - As categorias atuais (Realismo, Cover up, Fechamentos) e seus textos são **provisórios**, inspirados nos destaques do Instagram. O Silvio define as definitivas.
-- As fotos `teste-*.jpg` são **imagens de teste geradas**, não trabalhos dele. Remover com `npm run imagens:teste -- --limpar` quando entrarem as reais.
+- As fotos `teste-*.jpg` são **imagens de teste geradas**, não trabalhos dele. Elas somem sozinhas de uma categoria assim que ela recebe qualquer foto real; para apagar os arquivos: `npm run imagens:teste -- --limpar`.
+- As fotos `provisorio-*.jpg` são capas de reels baixadas do perfil público do Instagram (360 px) **só para revisar o layout**. Estão no `.gitignore`: existem apenas na máquina local, não vão para o git nem para o site publicado (têm baixa resolução e mostram corpos de clientes). Apagar quando chegarem as fotos reais.
 
 ## Regras de imagens (obrigatórias)
 
 O repositório é público e o risco real é cópia indevida das fotos. Portanto:
 
-1. **Originais em alta resolução ficam só em `originals/`**, ignorada pelo git. Nunca commitar. As fotos vêm do próprio Silvio (não raspar o Instagram).
+1. **Originais em alta resolução ficam só em `originals/`**, ignorada pelo git. Nunca commitar. As fotos vêm do próprio Silvio. Não raspar o Instagram; a única exceção são as capas provisórias locais descritas em "Conteúdo", que nunca são versionadas.
 2. O fluxo é `originals/<categoria>/foto.jpg` → `npm run imagens` → `src/assets/portfolio/<categoria>/foto.jpg`. O script **remove todos os metadados** (inclusive GPS, validado em teste), aplica a rotação do EXIF, reduz para no máximo 1600 px e aplica **marca d'água** discreta (`@silviorealistictattoo`, mudável por `MARCA_DAGUA`). Aceita jpg, jpeg, png e webp.
 3. Só `src/assets/` é versionado. O Astro ainda converte para WebP no build.
 4. Sem licença open source no repositório (todos os direitos reservados por padrão).
@@ -78,9 +83,10 @@ silviorealistic/
 ├── CLAUDE.md
 ├── memory/                  decisões e contexto (versionado, só conteúdo técnico)
 ├── originals/               fotos originais, LOCAL, ignorada pelo git
-├── scripts/                 processar-imagens.mjs, gerar-imagens-teste.mjs
-├── public/                  favicon.svg (e CNAME no futuro)
+├── scripts/                 processar-imagens.mjs, gerar-imagens-teste.mjs, preparar-logo.mjs
+├── public/                  favicon.png, apple-touch-icon.png (e CNAME no futuro)
 └── src/
+    ├── assets/marca/logo.png           logo do estúdio (fundo transparente)
     ├── assets/portfolio/<categoria>/   fotos publicáveis
     ├── components/          Cabecalho, Rodape, Orcamento, BotaoWhatsapp, Icone
     ├── content/categorias/  uma categoria por JSON
